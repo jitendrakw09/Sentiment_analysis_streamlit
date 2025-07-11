@@ -12,7 +12,7 @@ def analyze_page():
 
     chat_path = "data/chat.csv"
     if not os.path.exists(chat_path):
-        st.warning("⚠️ Please upload a chat log first.")
+        st.warning("⚠ Please upload a chat log first.")
         return
 
     df = pd.read_csv(chat_path)
@@ -24,30 +24,27 @@ def analyze_page():
     st.success("✅ Sentiment analysis complete!")
     st.dataframe(df.head())
 
-    if st.checkbox("🔓 Use OpenAI for Enhanced Sentiment"):
-        api_key = st.text_input("Enter your OpenAI API key", type="password")
-        if api_key and st.button("Run GPT Analysis"):
+    if st.checkbox("🔓 Use Gemini for Enhanced Sentiment"):
+        api_key = st.text_input("Enter your Gemini API key", type="password")
+        if api_key and st.button("Run Gemini Analysis"):
             try:
-                import openai
-                openai.api_key = api_key
+                import google.generativeai as genai
+                genai.configure(api_key=api_key)
+                model = genai.GenerativeModel("gemini-2.0-flash")
 
                 sentiments = []
                 for msg in df["message"]:
                     prompt = f"Classify the sentiment of this message as Positive, Neutral, or Negative:\n\n'{msg}'"
-                    response = openai.ChatCompletion.create(
-                        model="gpt-3.5-turbo",
-                        messages=[{"role": "user", "content": prompt}],
-                        temperature=0,
-                        max_tokens=10
-                    )
-                    label = response.choices[0].message.content.strip()
+                    response = model.generate_content(prompt)
+                    label = response.text.strip()
                     sentiments.append(label)
 
-                df["gpt_label"] = sentiments
-                df.to_csv("data/analyzed_chat_gpt.csv", index=False)
-                st.success("✅ GPT sentiment analysis complete!")
+                df["gemini_label"] = sentiments
+                df.to_csv("data/analyzed_chat.csv", index=False, encoding="utf-8")
+                df.to_csv("data/analyzed_chat_gemini.csv", index=False, encoding="utf-8")
+                st.success("✅ Gemini sentiment analysis complete!")
                 st.dataframe(df.head())
             except ImportError:
-                st.error("OpenAI library not installed. Run `pip install openai`.")
+                st.error("Gemini library not installed. Run pip install google-generativeai.")
             except Exception as e:
-                st.error(f"OpenAI Error: {str(e)}")
+                st.error(f"Gemini Error: {str(e)}")
