@@ -1,0 +1,6 @@
+timestamp,user,message,sentiment,label
+2025-07-01 09:15,Alice,"Hey team, great job on the project!",0.6588,Positive
+2025-07-01 09:20,Bob,I'm not happy with how the deadline was handled.,-0.4585,Negative
+2025-07-01 09:25,Alice,Let’s catch up on the progress later today.,0.4215,Positive
+2025-07-01 10:00,Charlie,Everything is on track. Feeling good about this.,0.5267,Positive
+2025-07-01 10:05,Bob,We really need to improve our communication.,0.4877,Positive
